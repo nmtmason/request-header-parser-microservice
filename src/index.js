@@ -1,15 +1,26 @@
 require('dotenv').config();
 
-var express = require('express');
+const express = require('express');
 
-var app = express();
+let app = express();
 
-app.get('/', function(request, response) {
-  response.send({
-    ipaddress:
-      request.headers['x-forwarded-for'] || request.connection.remoteAddress,
-    language: request.headers['accept-language'].split(',')[0],
-    software: /\((.*?)\)/.exec(request.headers['user-agent'])[1]
+const ipaddress = req => {
+  return req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+};
+
+const language = req => {
+  return req.headers['accept-language'];
+};
+
+const software = req => {
+  return req.headers['user-agent'];
+};
+
+app.get('/api/whoami', (req, res) => {
+  res.send({
+    ipaddress: ipaddress(req),
+    language: language(req),
+    software: software(req)
   });
 });
 
